@@ -300,48 +300,60 @@ body.bloom .bottom-right {
     overflow: visible; /* Açılınca taşan süsler varsa görünsün */
 }
 
-/* Mobile Responsiveness */
+/* =========================================
+   MOBİL İÇİN ÖZEL AYARLAR (GÜNCELLENDİ)
+========================================= */
+
 @media (max-width: 480px) {
+    .container {
+        /* 1. Zarfı ekranın biraz altına itiyoruz ki mektup yukarı çıkınca yeri olsun */
+        padding-top: 60px; 
+    }
+
     .envelope-wrapper {
-        width: 280px; /* Mobilde küçülüyor */
+        width: 280px;
         height: 180px;
     }
     
-    /* Mobil için border hesaplamaları (280x180'e göre) */
+    /* Mobil için border hesaplamaları */
     .side-flap.left-flap { border-left-width: 140px; border-top-width: 90px; border-bottom-width: 90px; }
     .side-flap.right-flap { border-right-width: 140px; border-top-width: 90px; border-bottom-width: 90px; }
     
     .bottom-flap { border-bottom-width: 110px; border-left-width: 140px; border-right-width: 140px; }
     .top-flap { border-top-width: 110px; border-left-width: 140px; border-right-width: 140px; }
     
-    .open .letter { transform: translate(-50%, -110%); }
+    /* 2. KRİTİK AYAR: Mektubun ne kadar yukarı çıkacağını azalttık */
+    /* Eskiden -140% idi, şimdi -115% yaptık ki ekrandan taşmasın */
+    .open .letter { 
+        transform: translate(-50%, -115%); 
+        height: 320px; /* Mektup boyunu mobilde biraz kısalttık */
+    }
     
-    .letter { padding: 10px; width: 90%; }
-    .photo-frame { width: 80px; height: 100px; padding-bottom: 15px; }
-    .letter-content h2 { font-size: 1.2rem; }
-    .letter-content p { font-size: 0.9rem; }
+    .letter { 
+        padding: 15px 10px; /* Kenar boşluklarını düzenledik */
+        width: 90%; 
+    }
 
-    .bg-decoration svg { width: 150px; height: 150px; }
-}
+    /* 3. FOTOĞRAF VE YAZI AYARLARI */
+    .photo-frame { 
+        width: 75px; /* Fotoğrafı biraz küçülttük */
+        height: 95px; 
+        padding: 4px 4px 20px 4px;
+        margin-bottom: 15px; /* Yazıyla fotoğrafın arasını açtık */
+    }
 
-/* --- 1. FOTOĞRAF İÇİN ALTIN ATAÇ/BANT EFEKTİ --- */
-.photo-frame {
-    position: relative; /* Ataç buna göre konumlanacak */
-}
+    .letter-content h2 { 
+        font-size: 1.1rem; 
+        margin-bottom: 8px; /* Başlık ile şiir arasını açtık */
+    }
+    
+    .letter-content p { 
+        font-size: 0.8rem; /* Şiir fontunu okunabilir ama küçük yaptık */
+        line-height: 1.4;
+    }
 
-/* Fotoğrafın üstüne altın bir bant ekler */
-.photo-frame::before {
-    content: '';
-    position: absolute;
-    top: -8px; /* Çerçevenin biraz üstüne */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px; /* Bant genişliği */
-    height: 12px; /* Bant yüksekliği */
-    background-color: #d4af37; /* Altın sarısı rengi */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Hafif gölge */
-    z-index: 10;
-    border-radius: 2px;
+    /* Süslemeleri mobilde biraz küçültelim */
+    .bg-decoration svg { width: 120px; height: 120px; }
 }
 
 
