@@ -1,0 +1,446 @@
+:root {
+    --bg-color: #f9f7f2;
+    --envelope-color: #d4a3a3; /* Dusty Rose */
+    --envelope-dark: #c59292;
+    --envelope-shadow: rgba(0, 0, 0, 0.15);
+    --paper-color: #fffefb;
+    --text-color: #4a4a4a;
+    --accent-color: #7e8c81; /* Sage Green */
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color);
+    font-family: 'Cormorant Garamond', serif;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Subtle Noise Texture */
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.04;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    z-index: 0;
+}
+
+/* --- BACKGROUND DECORATIONS (LALELER) --- */
+
+.bg-decoration {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5; /* Başlangıçta hafif silik */
+    transition: transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 1.5s ease;
+}
+
+.bg-decoration svg {
+    width: 250px;
+    height: 250px;
+}
+
+/* Köşe Konumlandırmaları */
+.bottom-left {
+    bottom: -20px;
+    left: -20px;
+}
+
+.bottom-right {
+    bottom: -20px;
+    right: -20px;
+}
+
+.top-left {
+    top: -30px;
+    left: -30px;
+    transform: rotate(180deg); /* Tavandan sarkıyor */
+}
+
+.top-right {
+    top: -30px;
+    right: -30px;
+    transform: rotate(180deg) scaleX(-1); /* Ayna görüntüsü */
+}
+
+/* --- BLOOM (BÜYÜME) EFEKTİ --- */
+/* JavaScript 'bloom' sınıfını eklediğinde bunlar devreye girer */
+
+body.bloom .bg-decoration {
+    opacity: 1; /* Parlaklaşır */
+    filter: drop-shadow(0 0 10px rgba(126, 140, 129, 0.3));
+}
+
+body.bloom .top-left {
+    transform: rotate(180deg) scale(1.2) translate(10px, 10px);
+}
+
+body.bloom .top-right {
+    transform: rotate(180deg) scaleX(-1) scale(1.2) translate(10px, 10px);
+}
+
+body.bloom .bottom-left {
+    transform: scale(1.2) translate(10px, -10px);
+}
+
+body.bloom .bottom-right {
+    transform: scale(1.2) translate(-10px, -10px);
+}
+
+/* --- CONTAINER & ENVELOPE --- */
+
+.container {
+    perspective: 1000px;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.envelope-wrapper {
+    position: relative;
+    /* GÜNCELLENDİ: Zarfı Büyüttük */
+    width: 400px; 
+    max-width: 80vw;
+    height: 260px;
+    cursor: pointer;
+}
+
+.envelope {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.envelope:hover {
+    transform: translateY(-5px);
+}
+
+/* --- LAYERS (KATMANLAR) --- */
+
+/* 1. BACK FACE (Arka Yüz) */
+.envelope-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--envelope-dark);
+    border-radius: 5px;
+    z-index: 1;
+}
+
+/* 2. LETTER (Mektup) */
+/* 2. LETTER (Mektup - Kapalı Hali) */
+.letter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 88%;
+    height: 90%; /* Kapalıyken zarfın içinde kalsın */
+    background-color: var(--paper-color);
+    z-index: 2;
+    padding: 15px; /* Kenar boşluğunu biraz azalttık */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    transition: all 0.8s ease-in-out; 
+    border-radius: 5px;
+    overflow: hidden; /* ÖNEMLİ: Taşan yazıları gizler */
+}
+
+/* Mektup İçeriği - Fotoğraf Çerçevesi */
+.photo-frame {
+    width: 90px;  /* Küçültüldü (Eski: 120px) */
+    height: 110px; /* Küçültüldü (Eski: 140px) */
+    background: #fff;
+    padding: 5px 5px 20px 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transform: rotate(-3deg);
+    margin-bottom: 10px; /* Alt boşluk azaltıldı */
+    border: 1px solid #ddd;
+    flex-shrink: 0; /* Fotoğrafın sıkışmasını engeller */
+}
+
+.photo-inner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.letter-content h2 {
+    font-family: 'Playfair Display', serif;
+    margin: 0 0 5px 0; /* Boşluk azaltıldı */
+    color: #333;
+    font-size: 1.2rem; /* Başlık biraz küçüldü */
+}
+
+.letter-content p {
+    font-size: 0.85rem; /* Şiir fontu küçültüldü ki sığsın */
+    color: #555;
+    margin: 0;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.signature {
+    margin-top: 10px !important;
+    font-size: 0.9rem !important;
+    font-style: italic;
+}
+
+/* 3. FLAPS (Kanatlar - Matematiksel Olarak Yeniden Hesaplandı) */
+/* Zarf Genişliği: 400px | Yüksekliği: 260px */
+
+.side-flap {
+    position: absolute;
+    top: 0;
+    width: 0;
+    height: 0;
+    z-index: 3;
+}
+
+.side-flap.left-flap {
+    left: 0;
+    border-top: 130px solid transparent;   /* Yükseklik / 2 */
+    border-bottom: 130px solid transparent;
+    border-left: 200px solid var(--envelope-color); /* Genişlik / 2 */
+}
+
+.side-flap.right-flap {
+    right: 0;
+    border-top: 130px solid transparent;
+    border-bottom: 130px solid transparent;
+    border-right: 200px solid var(--envelope-color);
+}
+
+.bottom-flap {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 200px solid transparent;
+    border-right: 200px solid transparent;
+    border-bottom: 160px solid var(--envelope-dark); /* Yükseklik biraz arttırıldı */
+    z-index: 4;
+}
+
+/* 4. TOP FLAP (Üst Kapak) */
+.top-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 200px solid transparent;
+    border-right: 200px solid transparent;
+    border-top: 140px solid var(--envelope-dark);
+    
+    transform-origin: top;
+    z-index: 5;
+    transition: transform 0.6s 0s, z-index 0.2s 0.2s;
+}
+
+/* LABEL (Etiket) */
+.envelope-label {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.2rem;
+    color: #555;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 6;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    border-radius: 3px;
+}
+
+/* --- ANIMATION STATES --- */
+
+.open .top-flap {
+    transform: rotateX(180deg);
+    z-index: 1;
+    transition-delay: 0s;
+}
+
+.open .envelope-label {
+    opacity: 0;
+}
+
+/* 3. Mektup Çıkıyor ve BÜYÜYOR */
+.open .letter {
+    /* Mektup açılınca boyu uzasın (height: 350px) ve yukarı çıksın */
+    height: 350px; 
+    transform: translate(-50%, -140%); /* Daha yukarı itiyoruz */
+    z-index: 10;
+    transition: transform 0.6s ease-in-out 0.4s, height 0.6s ease-in-out 0.4s, z-index 0s 0.4s;
+    overflow: visible; /* Açılınca taşan süsler varsa görünsün */
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 480px) {
+    .envelope-wrapper {
+        width: 280px; /* Mobilde küçülüyor */
+        height: 180px;
+    }
+    
+    /* Mobil için border hesaplamaları (280x180'e göre) */
+    .side-flap.left-flap { border-left-width: 140px; border-top-width: 90px; border-bottom-width: 90px; }
+    .side-flap.right-flap { border-right-width: 140px; border-top-width: 90px; border-bottom-width: 90px; }
+    
+    .bottom-flap { border-bottom-width: 110px; border-left-width: 140px; border-right-width: 140px; }
+    .top-flap { border-top-width: 110px; border-left-width: 140px; border-right-width: 140px; }
+    
+    .open .letter { transform: translate(-50%, -110%); }
+    
+    .letter { padding: 10px; width: 90%; }
+    .photo-frame { width: 80px; height: 100px; padding-bottom: 15px; }
+    .letter-content h2 { font-size: 1.2rem; }
+    .letter-content p { font-size: 0.9rem; }
+
+    .bg-decoration svg { width: 150px; height: 150px; }
+}
+
+/* --- 1. FOTOĞRAF İÇİN ALTIN ATAÇ/BANT EFEKTİ --- */
+.photo-frame {
+    position: relative; /* Ataç buna göre konumlanacak */
+}
+
+/* Fotoğrafın üstüne altın bir bant ekler */
+.photo-frame::before {
+    content: '';
+    position: absolute;
+    top: -8px; /* Çerçevenin biraz üstüne */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px; /* Bant genişliği */
+    height: 12px; /* Bant yüksekliği */
+    background-color: #d4af37; /* Altın sarısı rengi */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Hafif gölge */
+    z-index: 10;
+    border-radius: 2px;
+}
+
+
+/* --- 2. ARKA PLAN PARÇACIKLARI (PARTICLES) --- */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* En arkada dursun */
+    pointer-events: none; /* Tıklamayı engellemesin */
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.6); /* Yarı saydam beyaz noktalar */
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+    animation: floatParticle linear infinite;
+}
+
+/* Farklı boyut ve konumlarda parçacıklar */
+.p1 { width: 4px; height: 4px; top: 10%; left: 20%; animation-duration: 25s; }
+.p2 { width: 3px; height: 3px; top: 30%; left: 80%; animation-duration: 35s; animation-delay: -5s;}
+.p3 { width: 5px; height: 5px; top: 70%; left: 40%; animation-duration: 30s; animation-delay: -10s;}
+.p4 { width: 2px; height: 2px; top: 50%; left: 10%; animation-duration: 40s; animation-delay: -15s;}
+.p5 { width: 4px; height: 4px; top: 90%; left: 70%; animation-duration: 28s; animation-delay: -2s;}
+
+@keyframes floatParticle {
+    from { transform: translateY(0) translateX(0); opacity: 0.6; }
+    to { transform: translateY(-100vh) translateX(20px); opacity: 0; }
+}
+
+/* =========================================
+   FİNAL: UÇUŞAN PEMBE KALPLER
+========================================= */
+
+.hearts-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Mektubun (z-index: 10) önünde olması için 20 yaptık */
+    z-index: 20; 
+}
+
+.heart {
+    position: absolute;
+    bottom: 0;
+    width: 14px;
+    height: 14px;
+    background: #ff8fa3; /* Tatlı Pembe */
+    transform: rotate(45deg);
+    opacity: 0; /* Başlangıçta gizli */
+}
+
+.heart::before,
+.heart::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ff8fa3; /* Tatlı Pembe */
+}
+
+.heart::before { top: -7px; left: 0; }
+.heart::after { left: -7px; top: 0; }
+
+/* --- Animasyon --- */
+@keyframes floatUpFadeOut {
+    0% {
+        opacity: 0;
+        transform: translateY(0) rotate(45deg) scale(0.5);
+    }
+    10% {
+        opacity: 1; /* Hemen görünsün */
+    }
+    100% {
+        opacity: 0;
+        /* Mektubu aşıp tepeye kadar süzülsün */
+        transform: translateY(-400px) rotate(45deg) scale(1.2); 
+    }
+}
+
+/* Zarf açılınca çalışacak */
+.open .heart {
+    animation: floatUpFadeOut 3s ease-out forwards;
+}
+
+/* --- Konumlar ve Zamanlamalar --- */
+/* Kalpleri biraz daha ortaya topladık ki mektubun içinden çıkıyor gibi olsun */
+.h1 { left: 40%; animation-duration: 2s; animation-delay: 0.2s; }
+.h2 { left: 60%; animation-duration: 2.5s; animation-delay: 0.4s; }
+.h3 { left: 50%; animation-duration: 3s; animation-delay: 0.6s; transform: scale(1.2); }
+.h4 { left: 30%; animation-duration: 2.2s; animation-delay: 0.8s; }
+.h5 { left: 70%; animation-duration: 1.8s; animation-delay: 0.3s; }
